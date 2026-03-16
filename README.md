@@ -88,7 +88,7 @@ Place your converted WAV files in the `clips/` folder.
 ## Running the demo
 
 ```cmd
-python clap_demo_main.py
+uv run python clap_demo_main.py
 ```
 
 Then type a natural language query at the prompt:
