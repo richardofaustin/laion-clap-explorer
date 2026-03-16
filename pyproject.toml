@@ -1,0 +1,32 @@
+[project]
+name = "laion-clap-explorer"
+version = "0.1.0"
+description = "Interactive CLAP audio-language embedding explorer with PCA visualization"
+authors = [{ name = "richardofaustin" }]
+readme = "README.md"
+license = { text = "MIT" }
+requires-python = ">=3.10"
+
+dependencies = [
+    "torch>=2.0.0",
+    "torchaudio>=2.0.0",
+    "transformers>=4.36.0",
+    "librosa>=0.10.0",
+    "numpy>=1.24.0",
+    "matplotlib>=3.7.0",
+    "scikit-learn>=1.3.0",
+    # msclap is the Hugging Face CLAP wrapper — pulled in via transformers,
+    # but listed explicitly so the version is pinned and reproducible.
+    "accelerate>=0.25.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/richardofaustin/laion-clap-explorer"
+Repository = "https://github.com/richardofaustin/laion-clap-explorer"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["."]
