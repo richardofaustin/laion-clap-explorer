@@ -55,13 +55,10 @@ laion-clap-explorer/
 pip install uv
 ```
 
-### 2. Create a project folder and clone the repo into it
+### 2. Create a project folder and clone the repo into it.
 
 ```cmd
-mkdir laion-clap-explorer
-cd laion-clap-explorer
-uv init
-git clone https://github.com/richardofaustin/laion-clap-explorer.git .
+git clone https://github.com/richardofaustin/laion-clap-explorer.git
 ```
 
 ### 3. Install dependencies
