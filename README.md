@@ -49,10 +49,13 @@ laion-clap-explorer/
 
 ## Installation
 
-### 1. Install uv
+### 1. Install uv. It is used to install the dependencies.
 
 ```cmd
-pip install uv
+Windows PowerShell
+PS> powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
+Linux/MacOS
+curl -LsSf https://astral.sh/uv/install.sh | sh
 ```
 
 ### 2. Create a project folder and clone the repo into it.
