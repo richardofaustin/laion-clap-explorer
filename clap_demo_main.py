@@ -82,8 +82,15 @@ model.eval()
 # ============================================================
 # Build an absolute path to the "clips" folder sitting next to this script,
 # so the program works regardless of where it's launched from.
+import sys
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-AUDIO_DIR = os.path.join(BASE_DIR, "clips")
+clips_folder = sys.argv[1] if len(sys.argv) > 1 else "clips"
+AUDIO_DIR = os.path.join(BASE_DIR, clips_folder)
+
+if not os.path.isdir(AUDIO_DIR):
+    raise SystemExit(f"Clips folder not found: {AUDIO_DIR}")
+
+print(f"Using clips folder: {AUDIO_DIR}")
 
 # Collect all .wav filenames from the clips directory, sorted alphabetically
 # so the order is consistent across platforms.
