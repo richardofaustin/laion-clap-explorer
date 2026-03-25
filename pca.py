@@ -1,12 +1,12 @@
 # pca.py
 # ------
 # PCA plotting module: projects CLAP embeddings from 512D → 2D and draws
-# them as an arrow diagram. Also wires up click-to-play via play_wav.py.
+# them as a scatter plot. Also wires up click-to-play via play_wav.py.
 # Kept separate from clap_demo_main.py so the AI algorithm is front-and-centre
 # during a presentation without the matplotlib plumbing getting in the way.
 
 import numpy as np                  # Numerical arrays — all embeddings live here
-import matplotlib.pyplot as plt     # For drawing the vector diagram
+import matplotlib.pyplot as plt     # For drawing the scatter plot
 from sklearn.decomposition import PCA   # Dimensionality reduction: 512D → 2D
 
 from play_wav import play_wav       # Our isolated WAV playback helper
@@ -17,7 +17,7 @@ def build_pca(audio_embeddings):
     Fit a PCA model on the audio embeddings and return it.
 
     We fit on audio embeddings only (not text) so the coordinate system is
-    stable across multiple queries — the audio arrows won't jump around each
+    stable across multiple queries — the audio dots won't jump around each
     time you type a new query. Text embeddings are projected into this same
     coordinate system afterward using pca.transform().
 
@@ -40,15 +40,15 @@ def build_pca(audio_embeddings):
 
 def plot_pca_vectors(pca, audio_embeddings, text_emb, labels, sims, query, audio_dir):
     """
-    Draw the PCA vector diagram for one query and wire up click-to-play.
+    Draw the PCA scatter plot for one query and wire up click-to-play.
 
     Parameters:
       pca              : fitted sklearn PCA object from build_pca()
       audio_embeddings : (N, 512) array — all audio embeddings
-      text_emb         : (1, 512) array — the current text query embedding
+      text_emb         : (1, 512) array — the current text query embedding (unused for display)
       labels           : list of N strings — display names for each clip
       sims             : (N,) array — cosine similarity of each clip to the query
-      query            : str — the raw query text, shown on the plot
+      query            : str — the raw query text (unused for display)
       audio_dir        : str — path to the clips folder (needed for click-to-play)
     """
 
@@ -59,11 +59,6 @@ def plot_pca_vectors(pca, audio_embeddings, text_emb, labels, sims, query, audio
     # Project all 512D embeddings down to 2D using the axes learned above.
     # pca.transform() applies the matrix multiplication: (N, 512) @ (512, 2) → (N, 2)
     audio_2d = pca.transform(audio_embeddings)  # Shape: (N, 2)
-    text_2d  = pca.transform(text_emb)          # Shape: (1, 2)
-
-    # Combine audio and text 2D points so we can compute axis limits that
-    # fit everything on screen.
-    all_2d = np.vstack([audio_2d, text_2d])
 
     # Create the figure and axes. figsize is in inches at 100 dpi default.
     fig, ax = plt.subplots(figsize=(8, 7))
@@ -71,64 +66,34 @@ def plot_pca_vectors(pca, audio_embeddings, text_emb, labels, sims, query, audio
     ax.set_facecolor("white")           # Axes background
 
     # Draw faint crosshair lines through the origin (0, 0).
-    # The origin represents the "zero vector" — no content at all.
-    # All embeddings radiate outward from here like spokes on a wheel.
     ax.axhline(0, color="#cccccc", linewidth=0.8)
     ax.axvline(0, color="#cccccc", linewidth=0.8)
 
-    # --- Draw one arrow per audio clip ---
+    # --- Draw one dot per audio clip ---
     for i, (pt, label) in enumerate(zip(audio_2d, labels)):
 
         # Highlight the closest match in blue; grey out the others.
         color = "#2563eb" if i == closest_idx else "#64748b"
-        lw    = 2.0       if i == closest_idx else 1.2
+        size  = 80        if i == closest_idx else 50
 
-        # ax.annotate with arrowprops draws an arrow from xytext to xy.
-        # We draw from the origin (0,0) to the embedding's 2D position.
-        # "-|>" is the arrowhead style: a line with a solid triangular head.
-        ax.annotate("", xy=pt, xytext=(0, 0),
-                    arrowprops=dict(arrowstyle="-|>", color=color, lw=lw))
+        # ax.scatter plots a single dot at the embedding's 2D position.
+        # zorder=3 ensures dots render on top of the crosshair lines.
+        ax.scatter(pt[0], pt[1], color=color, s=size, zorder=3)
 
-        # Label each arrow tip with the clip name, offset slightly so it
-        # doesn't overlap the arrowhead.
+        # Label each dot with the clip name, offset slightly so it
+        # doesn't overlap the marker.
         ax.text(pt[0] + 0.01, pt[1] + 0.01, label,
                 fontsize=8, color=color)
 
-    # --- Draw the text query vector in orange ---
-    qpt = text_2d[0]  # Unwrap from (1, 2) to (2,)
-
-    # Same arrow-from-origin style, but orange to visually distinguish
-    # the text embedding from the audio embeddings.
-    ax.annotate("", xy=qpt, xytext=(0, 0),
-                arrowprops=dict(arrowstyle="-|>", color="#f97316", lw=2))
-
-    # Label the query arrow with the actual query text in quotes.
-    ax.text(qpt[0] + 0.01, qpt[1] + 0.01,
-            f'"{query}"', color="#f97316", fontsize=9)
-
-    # --- Compute the angle between the query and the closest audio clip ---
-    # np.clip guards against floating-point rounding pushing the value
-    # slightly outside [-1, 1], which would cause arccos to return NaN.
-    cos_angle = float(np.clip(sims[closest_idx], -1.0, 1.0))
-
-    # arccos converts cosine similarity back to an angle in radians;
-    # np.degrees converts to the more intuitive degrees unit.
-    # A small angle (e.g. 15°) means very similar; 90° means unrelated.
-    angle_deg = np.degrees(np.arccos(cos_angle))
-    closest_label = labels[closest_idx]
-
-    ax.set_title(
-        f"2D Projection of CLAP Embeddings\n"
-        f"Angle between '{query}' and '{closest_label}': {angle_deg:.1f} deg"
-    )
+    ax.set_title("2D Projection of CLAP Embeddings")
 
     ax.set_xlabel("PC 1")   # First principal component (most variance)
     ax.set_ylabel("PC 2")   # Second principal component (second-most variance)
 
     # Auto-scale the axis limits to fit all points with a small margin.
     pad = 0.05
-    xvals = all_2d[:, 0]
-    yvals = all_2d[:, 1]
+    xvals = audio_2d[:, 0]
+    yvals = audio_2d[:, 1]
     ax.set_xlim(xvals.min() - pad, xvals.max() + pad)
     ax.set_ylim(yvals.min() - pad, yvals.max() + pad)
 

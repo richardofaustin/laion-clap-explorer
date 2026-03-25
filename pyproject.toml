@@ -18,6 +18,8 @@ dependencies = [
     # msclap is the Hugging Face CLAP wrapper — pulled in via transformers,
     # but listed explicitly so the version is pinned and reproducible.
     "accelerate>=0.25.0",
+    "sounddevice>=0.5.5",
+    "soundfile>=0.13.1",
 ]
 
 [project.urls]
