@@ -72,9 +72,9 @@ def plot_pca_vectors(pca, audio_embeddings, text_emb, labels, sims, query, audio
     # --- Draw one dot per audio clip ---
     for i, (pt, label) in enumerate(zip(audio_2d, labels)):
 
-        # Highlight the closest match in blue; grey out the others.
-        color = "#2563eb" if i == closest_idx else "#64748b"
-        size  = 80        if i == closest_idx else 50
+        # Highlight the closest match in green; gray for the rest.
+        color = "#10a30d" if i == closest_idx else "#64748b"
+        size  = 40        if i == closest_idx else 20
 
         # ax.scatter plots a single dot at the embedding's 2D position.
         # zorder=3 ensures dots render on top of the crosshair lines.
