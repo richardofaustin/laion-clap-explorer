@@ -62,6 +62,11 @@ def plot_pca_vectors(pca, audio_embeddings, text_emb, labels, sims, query, audio
 
     # Create the figure and axes. figsize is in inches at 100 dpi default.
     fig, ax = plt.subplots(figsize=(8, 7))
+    mng = plt.get_current_fig_manager()
+    # W,H,Offset from left, Offset from top
+    mng.window.wm_geometry("960x800+630+0")
+
+    
     fig.patch.set_facecolor("white")    # Figure background (outside axes area)
     ax.set_facecolor("white")           # Axes background
 
@@ -72,9 +77,9 @@ def plot_pca_vectors(pca, audio_embeddings, text_emb, labels, sims, query, audio
     # --- Draw one dot per audio clip ---
     for i, (pt, label) in enumerate(zip(audio_2d, labels)):
 
-        # Highlight the closest match in green; gray for the rest.
-        color = "#10a30d" if i == closest_idx else "#64748b"
-        size  = 40        if i == closest_idx else 20
+        # Highlight the closest match in blue; grey out the others.
+        color = "#2563eb" if i == closest_idx else "#64748b"
+        size  = 80        if i == closest_idx else 50
 
         # ax.scatter plots a single dot at the embedding's 2D position.
         # zorder=3 ensures dots render on top of the crosshair lines.
