@@ -2,7 +2,7 @@
 
 An interactive demo that uses the [LAION CLAP](https://github.com/LAION-AI/CLAP) audio-language model to search a folder of WAV files using natural language queries. Results are visualized as a 2D PCA vector diagram — click any arrow to play the corresponding audio clip.
 
-> **Note:** The [original LAION CLAP repo](https://github.com/LAION-AI/CLAP) covers model training, architecture, and research reproduction. This repo demonstrates practical inference: how to load the model, compute embeddings, compare audio to text queries, and visualize the embedding space interactively.
+> **Note:** The repo covers model training, architecture, and research reproduction. They demonstrate practical inference: how to load the model, compute embeddings, and compare audio to text queries.
 
 ![Python](https://img.shields.io/badge/python-3.10%2B-blue)
 ![License](https://img.shields.io/badge/license-MIT-green)
