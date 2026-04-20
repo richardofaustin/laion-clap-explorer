@@ -1,0 +1,1 @@
+uv run python clap_demo_main.py %1
