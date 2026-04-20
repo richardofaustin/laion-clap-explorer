@@ -67,6 +67,7 @@ git clone https://github.com/richardofaustin/laion-clap-explorer.git
 ### 3. Install dependencies
 
 ```cmd
+cd laion-clap-explorer
 uv sync
 ```
 
@@ -76,19 +77,7 @@ uv sync
 
 ---
 
-## Preparing your audio clips
-
-All clips must be **mono, 48000 Hz WAV files**. If you have MP3s or stereo files, convert them with ffmpeg:
-
-```cmd
-for %f in (*.mp3) do ffmpeg -i "%f" -ac 1 -ar 48000 "%~nf.wav"
-```
-
-Place your converted WAV files in the `clips/` folder.
-
----
-
-## Running the demo
+### 4. Running the demo
 
 ```cmd
 uv run python clap_demo_main.py
