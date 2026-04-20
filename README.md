@@ -1,24 +1,25 @@
 # laion-clap-explorer
 
-An interactive demo that uses the [LAION CLAP](https://github.com/LAION-AI/CLAP) audio-language model to search a folder of WAV files using natural language queries. Results are visualized as a 2D PCA vector diagram — click any arrow to play the corresponding audio clip.
+An interactive demo that uses the [LAION CLAP](https://github.com/LAION-AI/CLAP) audio-language model to search a folder of WAV files using natural language queries. Results are ranked and then visualized as a 2D PCA vector diagram — click any arrow to play the corresponding audio clip.
 
-> **Note:** The repo covers model training, architecture, and research reproduction. They demonstrate practical inference: how to load the model, compute embeddings, and compare audio to text queries.
+> **Note:** The original [LAION CLAP](https://github.com/LAION-AI/CLAP) repo covers model training, architecture, and research reproduction. They demonstrate practical inference: how to load the model, compute embeddings, and compare audio to text queries.
 
 ![Python](https://img.shields.io/badge/python-3.10%2B-blue)
 ![License](https://img.shields.io/badge/license-MIT-green)
 
----
-
 ## What it does
 
-CLAP (Contrastive Language-Audio Pretraining) is a neural network trained on millions of (audio, text) pairs. It learns a shared 512-dimensional embedding space where sounds and descriptions that mean similar things point in the same direction from the origin.
+CLAP (Contrastive Language-Audio Pretraining) is a neural network trained on millions of (audio, text) pairs. It maps both sounds and
+their descriptions into a shared 512-dimensional embedding space,
+where semantically similar items lie close together.
 
 This demo lets you:
 - Load a folder of WAV files and compute their CLAP audio embeddings
 - Type a natural language query (e.g. `"the sound of a flute"`)
 - See a ranked list of your audio clips by cosine similarity to the query
-- View a 2D PCA projection of all embeddings as an arrow diagram
-- Click any arrow on the plot to play that audio clip
+- View a global 2D PCA projection of all embeddings
+- View a local PCA projection fit on the query plus the top 5 matches
+- Click points in either plot to play the corresponding audio clip
 
 ---
 
@@ -29,21 +30,11 @@ laion-clap-explorer/
 ├── clap_demo_main.py   # Main program — CLAP model loading, embedding, similarity ranking
 ├── pca.py              # PCA fitting and matplotlib vector diagram
 ├── play_wav.py         # WAV playback via OS default audio player (Windows)
-├── clips/              # Put your .wav files here
+├── clips [folders]     # Put your .wav files here.
 ├── pyproject.toml      # Dependencies for uv
 ├── .gitignore
 └── README.md
 ```
-
----
-
-## Requirements
-
-- Python 3.10+
-- [uv](https://docs.astral.sh/uv/) (fast Python package manager)
-- [ffmpeg](https://ffmpeg.org/) (for converting audio files to the required format)
-- Windows (for WAV playback via `start`; see [Other platforms](#other-platforms) below)
-- A CUDA-capable GPU is recommended but not required
 
 ---
 
@@ -96,7 +87,7 @@ Type a query (or 'exit'): the sound of a flute
 
 ---
 
-## Other platforms
+### Other platforms
 
 WAV playback in `play_wav.py` uses the Windows `start` command. To use on other platforms, change the `subprocess.Popen` line:
 
